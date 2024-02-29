@@ -16,7 +16,6 @@ CREATE TABLE albums(
 album_id INT auto_increment primary key,
 album_title VARCHAR(30) not null,
 release_year INT not null,
-origin VARCHAR(30) NOT NULL,
 fk_artist_id INT,
 fk_genre_id INT,
 FOREIGN KEY (fk_artist_id) REFERENCES artists(artist_id),
@@ -40,15 +39,15 @@ INSERT INTO artists (artist_name, origin, debut_year, fk_genre_id) VALUES
     ('Pink Floyd', 'United Kingdom', 1965, 1),
     ('Miles Davis', 'United States', 1944, 4),
     ('Daft Punk', 'France', 1993, 5);
-INSERT INTO albums (album_title, release_year, origin, fk_artist_id, fk_genre_id) VALUES
-    ('Sticky Fingers', 1971, 'United Kingdom', 1, 1),
-    ('21', 2011, 'United Kingdom', 2, 2),
-    ('The Blueprint', 2001, 'United States', 3, 3),
-    ('A Night at the Opera', 1975, 'United Kingdom', 4, 1),
-    ('Good Girl Gone Bad', 2007, 'Barbados', 5, 2),
-    ('The Rise and Fall of Ziggy Stardust', 1972, 'United Kingdom', 6, 1),
-    ('Lemonade', 2016, 'United States', 7, 2),
-    ('The Dark Side of the Moon', 1973, 'United Kingdom', 8, 1),
-    ('Kind of Blue', 1959, 'United States', 9, 4),
-    ('Random Access Memories', 2013, 'France', 10, 5);
+INSERT INTO albums (album_title, release_year, fk_artist_id, fk_genre_id) VALUES
+    ('Sticky Fingers', 1971, 1, 1),
+    ('21', 2011, 2, 2),
+    ('The Blueprint', 2001, 3, 3),
+    ('A Night at the Opera', 1975, 4, 1),
+    ('Good Girl Gone Bad', 2007, 5, 2),
+    ('The Rise and Fall of Ziggy Stardust', 1972, 6, 1),
+    ('Lemonade', 2016, 7, 2),
+    ('The Dark Side of the Moon', 1973, 8, 1),
+    ('Kind of Blue', 1959, 9, 4),
+    ('Random Access Memories', 2013, 10, 5);
 
