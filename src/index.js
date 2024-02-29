@@ -44,6 +44,7 @@ server.get('/getalbums', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Internal Server Error',
+      error: error.message,
     });
   } finally {
     conex.end();
@@ -102,6 +103,7 @@ server.post('/addalbum', async (req, res) => {
       res.status(409).json({
         success: false,
         message: 'Album already exists in the database.',
+        error: error.message,
       });
     }
   } catch (error) {
@@ -147,6 +149,49 @@ server.get('/byartist', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Internal Server Error',
+      error: error.message,
+    });
+  } finally {
+    conex.end();
+  }
+});
+
+server.put('/updateartist/:id', async (req, res) => {
+  const conex = await getDB();
+  try {
+    const id = req.params.id;
+    const [artistToUpdate] = await conex.query(
+      'SELECT * FROM artists WHERE artist_id =?',
+      [id]
+    );
+    if (artistToUpdate.length > 0) {
+      const data = req.body;
+      const { artist_name, origin, debut_year } = data;
+
+      const sql =
+        'UPDATE artists SET artist_name =?, origin =?, debut_year =? WHERE artist_id =?';
+      const [updatedArtist] = await conex.query(sql, [
+        artist_name,
+        origin,
+        debut_year,
+        id,
+      ]);
+      res.status(200).json({
+        success: true,
+        message: `The information for ${artist_name} has been updated successfully.`,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: `There is no artist with artist_id: ${id} in the database.`,
+      });
+    }
+  } catch (error) {
+    console.error('Error updating artist:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+      error: error.message,
     });
   } finally {
     conex.end();
@@ -178,6 +223,7 @@ server.delete('/deletealbum', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Internal Server Error',
+      error: error.message,
     });
   } finally {
     conex.end();
