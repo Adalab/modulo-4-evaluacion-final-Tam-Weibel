@@ -28,25 +28,34 @@ server.get('/getalbums', async (req, res) => {
     const sql = 'SELECT * FROM albums';
     const [resultAlbums] = await conex.query(sql);
 
-    conex.end();
-    res.status(200).json({
-      success: true,
-      albums: resultAlbums,
-    });
+    if (resultAlbums.length > 0) {
+      res.status(200).json({
+        success: true,
+        albums: resultAlbums,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'There are no albums in the database.',
+      });
+    }
   } catch (error) {
     console.error('Error fetching albums:', error);
     res.status(500).json({
       success: false,
       error: 'Internal Server Error',
     });
+  } finally {
+    conex.end();
   }
+  
 });
 
 server.post('/addalbum', async (req, res) => {
-    const conex = await getDB();
+  const conex = await getDB();
   try {
     let genreId, artistId;
-    
+
     const checkGenre = `SELECT * FROM genres WHERE genre_name = ?`;
     const [genreExists] = await conex.query(checkGenre, [req.body.genre]);
     if (!genreExists || genreExists.length === 0) {
@@ -87,19 +96,55 @@ server.post('/addalbum', async (req, res) => {
         genreId,
       ]);
       conex.end();
-      res.json({
+      res.status(200).json({
         success: true,
         message: 'Album added successfully to the database.',
       });
     } else {
       conex.end();
-      res.json({
+      res.status(409).json({
         success: false,
         message: 'Album already exists in the database.',
       });
     }
   } catch (error) {
     console.error('Error adding album:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+    });
+  } finally {
+    conex.end();
+  }
+});
+
+// server.get('/byartist', async (req, res) => {
+//     const conex = await getDB();
+
+// });
+
+server.delete('/deletealbum', async (req, res) => {
+  const conex = await getDB();
+  try {
+    const deleteAlbum = `DELETE FROM albums WHERE album_title = ?`;
+    const [albumExists] = await conex.query(deleteAlbum, [
+      req.body.album_title,
+    ]);
+    if (albumExists.affectedRows > 0) {
+      conex.end();
+      res.status(200).json({
+        success: true,
+        message: 'Album successfully deleted from the database.',
+      });
+    } else {
+      conex.end();
+      res.status(404).json({
+        success: false,
+        message: `Album doesn't exist in the database`,
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting album:', error);
     res.status(500).json({
       success: false,
       message: 'Internal Server Error',
