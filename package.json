@@ -1,0 +1,32 @@
+{
+  "name": "modulo-4-evaluacion-final-tam-weibel",
+  "version": "1.0.0",
+  "description": "evaluacion modulo 4 de Tamara Weibel",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "publish-react": "cd web && npm run build && cd .. && rm -rf ./src/public-react && mv ./web/dist ./src/public-react"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adalab/modulo-4-evaluacion-final-Tam-Weibel.git"
+  },
+  "author": "Tam Weibel",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.9.2",
+    "nodemon": "^3.0.3"
+  },
+  "bugs": {
+    "url": "https://github.com/Adalab/modulo-4-evaluacion-final-Tam-Weibel/issues"
+  },
+  "homepage": "https://github.com/Adalab/modulo-4-evaluacion-final-Tam-Weibel#readme"
+}
