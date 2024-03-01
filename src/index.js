@@ -23,31 +23,64 @@ server.listen(port, () => {
 });
 
 server.get('/getalbums', async (req, res) => {
+  const conex = await getDB();
   try {
-    const conex = await getDB();
-    const sql = 'SELECT * FROM albums';
+    let sql = 'SELECT * FROM albums';
+    const byGenre = req.query && req.query.genre ? req.query.genre.toLowerCase() : null;
+
+    if (byGenre) {
+      const genreIdQuery = 'SELECT * FROM genres WHERE LOWER(genre_name) = ?';
+      const [getGenreID] = await conex.query(genreIdQuery, [byGenre]);
+      if (getGenreID.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: `There are no ${byGenre} albums in the database.`,
+        });
+      } else {
+        const genreId = getGenreID[0].genre_id;
+        sql += ' WHERE fk_genre_id = ?';
+        const [resultAlbums] = await conex.query(sql, [genreId]);
+
+        if (resultAlbums.length > 0) {
+          return res.status(200).json({
+            success: true,
+            message: `These are the ${byGenre} albums in the database:`,
+            albums: resultAlbums,
+          });
+        } else {
+          return res.status(404).json({
+            success: false,
+            message: `There are no ${byGenre} albums in the database.`,
+          });
+        }
+      }
+    }
+
     const [resultAlbums] = await conex.query(sql);
 
     if (resultAlbums.length > 0) {
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
+        message: 'These are the albums in the database:',
         albums: resultAlbums,
       });
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: 'There are no albums in the database.',
       });
     }
   } catch (error) {
     console.error('Error fetching albums:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Internal Server Error',
       error: error.message,
     });
   } finally {
-    conex.end();
+    if (conex) {
+      conex.end();
+    }
   }
 });
 
@@ -95,12 +128,12 @@ server.post('/addalbum', async (req, res) => {
         artistId,
         genreId,
       ]);
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Album added successfully to the database.',
       });
     } else {
-      res.status(409).json({
+      return res.status(409).json({
         success: false,
         message: 'Album already exists in the database.',
         error: error.message,
@@ -108,51 +141,55 @@ server.post('/addalbum', async (req, res) => {
     }
   } catch (error) {
     console.error('Error adding album:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal Server Error',
     });
   } finally {
-    conex.end();
+    if (conex) {
+      conex.end();
+    }
   }
 });
 
 server.get('/byartist', async (req, res) => {
   const conex = await getDB();
   try {
-    const artistName = req.query.artist_name;
+    const artistName = req.query && req.query.artist_name ? req.query.artist_name.toLowerCase() : null;
     if (!artistName) {
-      res.status(400).jason({
+      return res.status(400).json({
         success: false,
-        message: 'The artist name is a required parameter.',
+        message: 'The artist name is a required search parameter.',
       });
       return;
     }
 
     const getAlbumsByArtist =
-      'SELECT albums.*, artists.artist_name AS artist_name FROM albums JOIN artists ON albums.fk_artist_id = artists.artist_id WHERE artists.artist_name = ?';
+      'SELECT albums.*, artists.artist_name AS artist_name FROM albums JOIN artists ON albums.fk_artist_id = artists.artist_id WHERE LOWER(artists.artist_name) = ?';
 
     const [albums] = await conex.query(getAlbumsByArtist, [artistName]);
     if (albums.length > 0) {
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         albums: albums,
       });
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: `There are no albums by ${artistName} in the database.`,
       });
     }
   } catch (error) {
     console.error('Error fetching albums by artist:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal Server Error',
       error: error.message,
     });
   } finally {
-    conex.end();
+    if (conex) {
+      conex.end();
+    }
   }
 });
 
@@ -176,57 +213,60 @@ server.put('/updateartist/:id', async (req, res) => {
         debut_year,
         id,
       ]);
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: `The information for ${artist_name} has been updated successfully.`,
       });
     } else {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: `There is no artist with artist_id: ${id} in the database.`,
       });
     }
   } catch (error) {
     console.error('Error updating artist:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal Server Error',
       error: error.message,
     });
   } finally {
-    conex.end();
+    if (conex) {
+      conex.end();
+    }
   }
 });
 
 server.delete('/deletealbum', async (req, res) => {
   const conex = await getDB();
+  albumToDelete = req.body.album_title.toLowerCase();
   try {
-    const deleteAlbum = `DELETE FROM albums WHERE album_title = ?`;
-    const [albumExists] = await conex.query(deleteAlbum, [
-      req.body.album_title,
-    ]);
+    const deleteAlbum = `DELETE FROM albums WHERE LOWER(album_title) = ?`;
+    const [albumExists] = await conex.query(deleteAlbum, [albumToDelete]);
     if (albumExists.affectedRows > 0) {
       conex.end();
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'Album successfully deleted from the database.',
       });
     } else {
       conex.end();
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: `Album doesn't exist in the database`,
       });
     }
   } catch (error) {
     console.error('Error deleting album:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal Server Error',
       error: error.message,
     });
   } finally {
-    conex.end();
+    if (conex) {
+      conex.end();
+    }
   }
 });
 
