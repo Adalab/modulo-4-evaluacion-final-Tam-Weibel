@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
+const swaggerUI = require ('swagger-ui-express');
+const swaggerConfig = require('./swagger.json');
 
 const server = express();
 server.use(cors());
@@ -21,6 +23,8 @@ async function getDB() {
 server.listen(port, () => {
   console.log(`El servidor se esta ejecutando en el puerto ${port}`);
 });
+
+server.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerConfig));
 
 server.get('/getalbums', async (req, res) => {
   const conex = await getDB();
@@ -136,7 +140,6 @@ server.post('/addalbum', async (req, res) => {
       return res.status(409).json({
         success: false,
         message: 'Album already exists in the database.',
-        error: error.message,
       });
     }
   } catch (error) {

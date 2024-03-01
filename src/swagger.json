@@ -1,0 +1,452 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Music API",
+    "version": "1.0.0",
+    "description": "This is a simple API to search for information on albums and artists in the music industry."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Dev server"
+    }
+  ],
+  "paths": {
+    "/getalbums": {
+      "get": {
+        "summary": "Lists all albums in the database.",
+        "parameters": [
+          {
+            "name": "genre",
+            "in": "query",
+            "description": "Filter albums by genre (case-insensitive).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "These are the albums in the database:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "albums": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/album"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There are no albums in the database or in the specified genre.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/addalbum": {
+      "post": {
+        "summary": "Adds a new album to the database.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/album"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Album added successfully to the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates if the operation was successful."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Album added successfully to the database."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Album already exists in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates if the operation was successful."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Album already exists in the database."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Additional error information."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates if the operation was successful."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "A message indicating the failure due to an internal server error."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/byartist": {
+      "get": {
+        "summary": "Lists all albums by a specific artist in the database.",
+        "parameters": [
+          {
+            "name": "artist_name",
+            "in": "query",
+            "description": "The name of the artist to filter albums (case-insensitive).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "These are the albums by the specified artist in the database:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "albums": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/album"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There are no albums by the specified artist in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/updateartist/{id}": {
+      "put": {
+        "summary": "Updates information for a specific artist in the database.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the artist to update.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/artistUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The information for the artist has been updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "There is no artist with the specified ID in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deletealbum": {
+      "delete": {
+        "summary": "Deletes a specific album from the database.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "album_title": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Album successfully deleted from the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Album not found in the database.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "album": {
+        "type": "object",
+        "properties": {
+          "album_title": {
+            "type": "string",
+            "description": "The title of the album."
+          },
+          "release_year": {
+            "type": "integer",
+            "description": "The release year of the album."
+          },
+          "artist_name": {
+            "type": "string",
+            "description": "The name of the artist."
+          },
+          "origin": {
+            "type": "string",
+            "description": "The origin of the artist."
+          },
+          "debut_year": {
+            "type": "integer",
+            "description": "The debut year of the artist."
+          },
+          "genre": {
+            "type": "string",
+            "description": "The genre of the album."
+          }
+        }
+      },
+      "artistUpdate": {
+        "type": "object",
+        "properties": {
+          "artist_name": {
+            "type": "string",
+            "description": "The updated name of the artist."
+          },
+          "origin": {
+            "type": "string",
+            "description": "The updated origin of the artist."
+          },
+          "debut_year": {
+            "type": "integer",
+            "description": "The updated debut year of the artist."
+          }
+        }
+      }
+    }
+  }
+}
