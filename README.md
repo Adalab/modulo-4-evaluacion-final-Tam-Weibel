@@ -1,12 +1,12 @@
 # modulo-4-evaluacion-final-Tam-Weibel
 
-The exercise consists in creating a REST API that allows for CRUD operation. 
+The exercise consists of creating a REST API that allows for CRUD operations. 
 
 In this proposed solution, Express.js was used for server operation, Node.js for the backend and MySQL for the database.
 
 For the DB design 'music.sql' has been uploaded to the 'bd' folder in the repo with the queries used to create the Music database and the three tables it includes (artists, albums and genre). The relationships between these tables are established through foreign keys, ensuring a well-organized database structure.
 
-5 endpoints have been configured allowing for all CRUD operations to be executed. Please ses below the readme with all necessary documentation.
+Five endpoints have been configured allowing for all CRUD operations to be executed. Please see below the readme with all necessary documentation.
 
 ## Music API
 
@@ -27,7 +27,7 @@ This is a simple API to search for information on albums and artists in the musi
 ### Installation
 
 1. Clone the repository:
-   git clone https://github.com/your-username/music-api.git
+   git clone https://github.com/Adalab/modulo-4-evaluacion-final-Tam-Weibel
 
 2. Install dependencies:
     npm install
@@ -38,7 +38,8 @@ This is a simple API to search for information on albums and artists in the musi
     npm start
 
 ### Usage
-The API is now running on http://localhost:4000.
+The API is now running on port 4000. 
+You can access it at http://localhost:4000.
 
 ### API Documentation
 For detailed API documentation, you can explore the Swagger Documentation available at http://localhost:4000/api-doc.
