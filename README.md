@@ -27,7 +27,7 @@ This is a simple API to search for information on albums and artists in the musi
 ### Installation
 
 1. Clone the repository:
-   git clone https://github.com/your-username/music-api.git
+   git clone https://github.com/Adalab/modulo-4-evaluacion-final-Tam-Weibel
 
 2. Install dependencies:
     npm install
