@@ -240,12 +240,12 @@
         }
       }
     },
-    "/updateartist/{id}": {
+    "/updateartist/{artist_id}": {
       "put": {
         "summary": "Updates information for a specific artist in the database.",
         "parameters": [
           {
-            "name": "id",
+            "name": "artist_id",
             "in": "path",
             "description": "The ID of the artist to update.",
             "required": true,

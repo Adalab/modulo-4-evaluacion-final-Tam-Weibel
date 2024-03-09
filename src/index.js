@@ -6,18 +6,24 @@ const swaggerConfig = require('./swagger.json');
 
 const server = express();
 server.use(cors());
-const port = 4000;
+const port = process.env.PORT || 4000;
 server.use(express.json());
+require('dotenv').config();
 
 async function getDB() {
-  const dataBase = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'r00t',
-    database: 'music',
-  });
-  await dataBase.connect();
-  return dataBase;
+  try {
+    const dataBase = await mysql.createConnection({
+      host: 'localhost',
+      user: process.env.USER_DB,
+      password: process.env.USER_PASS,
+      database: 'music',
+    });
+    await dataBase.connect();
+    return dataBase;
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+    throw new Error('Failed to establish database connection');
+  }
 }
 
 server.listen(port, () => {
@@ -196,7 +202,7 @@ server.get('/byartist', async (req, res) => {
   }
 });
 
-server.put('/updateartist/:id', async (req, res) => {
+server.put('/updateartist/:artist_id', async (req, res) => {
   const conex = await getDB();
   try {
     const id = req.params.id;

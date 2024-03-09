@@ -33,13 +33,20 @@ This is a simple API to search for information on albums and artists in the musi
     npm install
 
 3. Set up your database and configure the connection in config.js.
+ 
+4. Create a .env file in the root of the project and add the following environment variables:
 
-4. Start the server:
+    USER_DB=your_database_user
+    USER_PASS=your_database_password
+    PORT=your_desired_port
+
+Replace your_database_host, your_database_user, your_database_password, and your_desired_port with the appropriate values.
+
+5. Start the server:
     npm start
 
 ### Usage
-The API is now running on port 4000. 
-You can access it at http://localhost:4000.
+The API is now running on the port specified in the environment variable PORT or defaults to port 4000 if not provided. You can access it at http://localhost:${port}.
 
 ### API Documentation
 For detailed API documentation, you can explore the Swagger Documentation available at http://localhost:4000/api-doc.
@@ -144,7 +151,7 @@ Something went wrong on the server.
 #### Update Artist
 Request
 - Method: PUT
-- Endpoint: /updateartist/:id
+- Endpoint: /updateartist/:artist_id
 - Parameters:
     id (required): The ID of the artist to update.
 - Request Body:
